@@ -10,7 +10,7 @@ module.exports = async function databaseController(server) {
      *      Users(Col):
      *          _id: ObjectId(PreGenerated)
      *          name: String(Required)
-     *          email: String(Required) {Hashed}
+     *          login: String(Required) {Hashed}
      *          password: String(Required) {Hashed}
      *          icon: String(Optional)
      *          secret: String(PreGenerated, 32hex symbols)
@@ -19,10 +19,11 @@ module.exports = async function databaseController(server) {
      *          bio: String(default: null)
      *
      *      Token(Sch):
-     *          _id: ObjectId(PreGenerated)
-     *          scopes: Number(dedault: 3)
+     *          jti: ObjectId(PreGenerated)
+     *          scopes: Number(default: 3)
      *          aud: String
      *          type: String
+     *          exp: Timestamp
      *          linked_token: ObjectId -> Users.token[linked_access_token]._id // only 'refresh' tokens
      *
      *      Channels(Col):
@@ -51,7 +52,7 @@ module.exports = async function databaseController(server) {
 
     /** Other info
      *      Users.access:
-     *          0b1 - read messages, channels and users
+     *          0b1 - read messages, channels and users, manage invites
      *          0b10 - create, edit, delete own messages and channels
      *          0b100 - all endpoints access
      *
@@ -73,7 +74,7 @@ module.exports = async function databaseController(server) {
         constructor( data ) {
             this._id = data._id || new server.mongo.ObjectId();
             this.name = data.name;
-            this.email = data.email || null;
+            this.login = data.login;
             this.password = data.password;
             this.icon = data.icon || 'default.png';
             this.secret = data.secret || random.generate({ charset: 'hex' });
@@ -191,9 +192,7 @@ module.exports = async function databaseController(server) {
         }
     };
 
-    console.log((new User({name: 'ur', password: 'or'})))
-
-    server.db = {
+    server.decorate('db', {
         mongo: server.mongo,
         client: server.mongo.client,
         users: {
@@ -207,7 +206,7 @@ module.exports = async function databaseController(server) {
                     return server.db.users.collection.insert( data )
                 },
                 update: function(query) {
-                    return server.db.users.collection.updateMany( query.filter, query.data )
+                    return server.db.users.collection.updateMany( query.filter, query.data, query.options || null )
                 },
                 delete: function(filter) {
                     return server.db.users.collection.deleteMany( filter )
@@ -231,15 +230,12 @@ module.exports = async function databaseController(server) {
                     return server.db.messages.collection.insert( data )
                 },
                 update: function(query) {
-                    return server.db.messages.collection.updateMany( query.filter, query.data )
+                    return server.db.messages.collection.updateMany( query.filter, query.data, query.options || null )
                 },
                 delete: function(filter) {
                     return server.db.messages.collection.deleteMany( filter )
                 },
             },
-            searchInChannel: function(cid, page) {
-                return server.db.messages.raw.find({ channel: cid }).sort({ created_at: -1 }).skip(20*page)
-            }
             delete: function(mid) {
                 return server.db.messages.raw.delete({ _id: mid })
             }
@@ -255,7 +251,7 @@ module.exports = async function databaseController(server) {
                     return server.db.channels.collection.insert( data )
                 },
                 update: function(query) {
-                    return server.db.channels.collection.updateMany( query.filter, query.data )
+                    return server.db.channels.collection.updateMany( query.filter, query.data, query.options || null )
                 },
                 delete: function(filter) {
                     return server.db.channels.collection.deleteMany( filter )
@@ -264,9 +260,12 @@ module.exports = async function databaseController(server) {
             searchForUser: function(uid) {
                 return server.db.clannels.raw.find({ 'members._id': uid })
             },
+            searchMessages: function(cid, page) {
+                return server.db.messages.raw.find({ channel: cid }).sort({ created_at: -1 }).skip(20*page)
+            },
             delete: function(cid) {
                 return server.db.channels.raw.delete({ _id: cid })
             }
         }
-    };
+    });
 };

@@ -30,9 +30,9 @@ server.register(require('@fastify/cors'), {
 
 /*  Routes and controllers registration */
 
-require('./backend/routes/static')(server)
-require('./backend/controllers/database')(server)
-require('./backend/controllers/auth')(server)
+require('./backend/routes/static')(server);
+require('./backend/controllers/database')(server);
+require('./backend/controllers/auth')(server);
 
 
 /* Listening :| */
@@ -41,4 +41,4 @@ try {
     server.listen({ port: 3000 });
 } catch(e) {
     console.error(e);
-}
+};
