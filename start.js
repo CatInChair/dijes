@@ -14,7 +14,8 @@ const server = Fastify({
         cert: fs.readFileSync(path.join(__dirname, 'tls', 'localhost-cert.pem'))
     },
     ignoreTrailingSlash: true,
-    disableRequestLogging: true
+    disableRequestLogging: true,
+    requestTimeout: 1000
 });
 
 
@@ -23,7 +24,7 @@ const server = Fastify({
 
 server.register(require('@fastify/cors'), {
     origin: true,
-    methods: ['GET', 'CREATE', 'EDIT', 'POST', 'DELETE']
+    methods: ['GET', 'PATCH', 'EDIT', 'POST', 'DELETE']
 });
 
 
@@ -33,6 +34,7 @@ server.register(require('@fastify/cors'), {
 require('./backend/routes/static')(server);
 require('./backend/controllers/database')(server);
 require('./backend/controllers/auth')(server);
+require('./backend/controllers/api')(server);
 
 
 /* Listening :| */

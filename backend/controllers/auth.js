@@ -73,19 +73,15 @@ module.exports = function authController(server) {
         verifyErrorLogLevel: 'debug'
     }).decorate('scope_0', function(req, reply, done) {
         if( req.auth.scopes & 0b1 > 0 ) return done();
-        reply.code(403);
         return done( server.httpErrors.forbidden() );
     }).decorate('scope_1', function(req, reply, done) {
         if( req.auth.scopes & 0b10 > 0 ) return done();
-        reply.code(403);
         return done( server.httpErrors.forbidden() );
     }).decorate('scope_2', function(req, reply, done) {
         if( req.auth.scopes & 0b100 > 0 ) return done();
-        reply.code(403);
         return done( server.httpErrors.forbidden() );
     }).decorate('scope_3', function(req, reply, done) {
         if( req.auth.scopes & 0b1000 > 0 ) return done();
-        reply.code(403);
         return done( server.httpErrors.forbidden() );
     });
 
@@ -111,7 +107,6 @@ module.exports = function authController(server) {
             }))[0];
 
             if( !user ) {
-                rep.code(403);
                 return server.httpErrors.forbidden();
             }
 

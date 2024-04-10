@@ -14,7 +14,7 @@ module.exports = async function databaseController(server) {
      *          password: String(Required) {Hashed}
      *          icon: String(Optional)
      *          secret: String(PreGenerated, 32hex symbols)
-     *          token: [ Token ]
+     *          token: [ Token ](default: [])
      *          access: Number(default: 3)
      *          bio: String(default: null)
      *
@@ -90,18 +90,18 @@ module.exports = async function databaseController(server) {
             this.data = {
                 name: this.name,
                 icon: this.icon,
-                email: this.email,
+                login: this.login,
                 password: this.password,
                 _id: this._id,
                 access: this.access,
+                bio: this.bio,
                 token: this.token,
-                secret: this.secret,
-                bio: this.bio
+                secret: this.secret
             };
         }
 
         register() {
-            return server.db.users.create( this.data );
+            return server.db.users.raw.insert( this.data );
         }
 
         edit(filter, data) {
@@ -213,7 +213,7 @@ module.exports = async function databaseController(server) {
                 },
             },
             searchById: function(uid) {
-                return server.db.users.raw.find({ _id: uid })
+                return server.db.users.raw.find({ _id: new server.mongo.ObjectId(uid) })
             },
             delete: function(uid) {
                 return server.db.users.raw.delete({ _id: uid })
