@@ -85,7 +85,8 @@ module.exports = async function databaseController(server) {
             this.publicData = {
                 name: this.name,
                 icon: this.icon,
-                bio: this.bio
+                bio: this.bio,
+                id: this._id
             };
             this.data = {
                 name: this.name,
@@ -109,7 +110,7 @@ module.exports = async function databaseController(server) {
         }
 
         delete() {
-            return server.db.messages.delete( this._id );
+            return server.db.users.delete( this._id );
         }
     };
 
@@ -192,6 +193,7 @@ module.exports = async function databaseController(server) {
         }
     };
 
+
     server.decorate('db', {
         mongo: server.mongo,
         client: server.mongo.client,
@@ -203,17 +205,17 @@ module.exports = async function databaseController(server) {
                     return server.db.users.collection.find( filter )
                 },
                 insert: function(data) {
-                    return server.db.users.collection.insert( data )
+                    return server.db.users.collection.insertOne( data )
                 },
-                update: function(query) {
-                    return server.db.users.collection.updateMany( query.filter, query.data, query.options || null )
+                update: function(query,data,options) {
+                    return server.db.users.collection.updateMany( query, data, options )
                 },
                 delete: function(filter) {
                     return server.db.users.collection.deleteMany( filter )
                 },
             },
             searchById: function(uid) {
-                return server.db.users.raw.find({ _id: new server.mongo.ObjectId(uid) })
+                return server.db.users.collection.findOne({ _id: new server.mongo.ObjectId(uid) })
             },
             delete: function(uid) {
                 return server.db.users.raw.delete({ _id: uid })
@@ -227,7 +229,7 @@ module.exports = async function databaseController(server) {
                     return server.db.messages.collection.find( filter )
                 },
                 insert: function(data) {
-                    return server.db.messages.collection.insert( data )
+                    return server.db.messages.collection.insertOne( data )
                 },
                 update: function(query) {
                     return server.db.messages.collection.updateMany( query.filter, query.data, query.options || null )
@@ -248,7 +250,7 @@ module.exports = async function databaseController(server) {
                     return server.db.channels.collection.find( filter )
                 },
                 insert: function(data) {
-                    return server.db.channels.collection.insert( data )
+                    return server.db.channels.collection.insertOne( data )
                 },
                 update: function(query) {
                     return server.db.channels.collection.updateMany( query.filter, query.data, query.options || null )
