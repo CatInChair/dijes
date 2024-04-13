@@ -25,10 +25,12 @@ global.path = require('node:path');
 
 /*  Plugins registration */
 
-    server.register(require('@fastify/cors'), {
+    await server.register(require('@fastify/cors'), {
         origin: true,
         methods: ['GET', 'POST', 'DELETE']
     });
+
+    await server.register(require('@fastify/websocket'));
 
    /* server.register(require('@fastify/swagger'), {
         openapi: {
@@ -61,15 +63,15 @@ global.path = require('node:path');
     await require('./backend/controllers/auth')(server);
     await require('./backend/routes/user_routes')(server);
     await require('./backend/routes/channel_routes')(server);
+    await require('./backend/routes/message_routes')(server);
+    await require('./backend/controllers/socket')(server);
 
 
 
 /* Listening :| */
 
-    try {
-        server.listen({ port: 3000 });
-    } catch(e) {
-        console.error(e);
-    };
+    server.listen({ port: 3000 }, (err) => {
+        console.error(err);
+    });
 
 })();

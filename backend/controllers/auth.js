@@ -1,4 +1,4 @@
-const { createSigner, createDecoder, createVerifier, TOKEN_ERROR_CODES } = require('fast-jwt')
+const { createSigner, createDecoder, createVerifier, TOKEN_ERROR_CODES } = require('fast-jwt');
 
 var hostname = 'dijes.glitch.me';
 var access_exp = 21600000;

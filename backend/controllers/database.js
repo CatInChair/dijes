@@ -44,7 +44,7 @@ module.exports = async function databaseController(server) {
      *          _id: ObjectId(PreGenerated)
      *          content: String(Required)
      *          created_at: Timestamp(PreGenerated),
-     *          created_by: ObjectId -> Users._id(PreGenerated)
+     *          created_by: ObjectId -> Users._id
      *          channel: ObjectId -> Channels._id
      *
      */
@@ -132,7 +132,7 @@ module.exports = async function databaseController(server) {
         }
 
         send() {
-            return server.db.messages.create( this.data );
+            return server.db.messages.raw.insert( this.data );
         }
 
         edit(filter, data) {
@@ -244,15 +244,18 @@ module.exports = async function databaseController(server) {
                 insert: function(data) {
                     return server.db.messages.collection.insertOne( data )
                 },
-                update: function(query) {
-                    return server.db.messages.collection.updateMany( query.filter, query.data, query.options || null )
+                update: function(filter, data, options) {
+                    return server.db.messages.collection.updateMany( filter, data, options )
                 },
                 delete: function(filter) {
                     return server.db.messages.collection.deleteMany( filter )
                 },
             },
+            searchById: function(uid) {
+                return server.db.messages.collection.findOne({ _id: new server.mongo.ObjectId(uid) })
+            },
             delete: function(mid) {
-                return server.db.messages.raw.delete({ _id: mid })
+                return server.db.messages.raw.delete({ _id: new server.mongo.ObjectId(mid) })
             }
         },
         channels: {
@@ -279,7 +282,7 @@ module.exports = async function databaseController(server) {
                 return server.db.clannels.raw.find({ 'members._id': uid })
             },
             searchMessages: function(cid, page) {
-                return server.db.messages.raw.find({ channel: cid }).sort({ created_at: -1 }).skip(20*page)
+                return server.db.messages.raw.find({ channel: new server.mongo.ObjectId(cid) }).sort({ created_at: -1 }).skip(20*page)
             },
             delete: function(cid) {
                 return server.db.channels.raw.delete({ _id: new server.mongo.ObjectId(cid) })

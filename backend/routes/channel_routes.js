@@ -150,7 +150,7 @@ module.exports = function APIController(server) {
             if( !(await server.db.users.searchById(req.body.id)) ) return server.httpErrors.notFound();
 
             if ( !channel || !channel.members.find( a => a._id.toString() == req.auth.user._id.toString()) ) return server.httpErrors.notFound();
-            if ( !(req.auth.user._id in channel.members.map(a => a._id) && channel.members.find(a => a._id.toString() == req.auth.user._id.toString()).permissions == 1) && !(req.auth.user.access & 0b100 ) == 0 ) return server.httpErrors.forbidden();
+            if ( !(req.auth.user._id in channel.members.map(a => a._id) && channel.members.find(a => a._id.toString() == req.auth.user._id.toString()).permissions == 1) && (req.auth.user.access & 0b100 ) == 0 ) return server.httpErrors.forbidden();
 
             console.log(req.body.id in channel.members.map( a => a._id.toString()))
 
