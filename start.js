@@ -60,6 +60,7 @@ global.path = require('node:path');
     await require('./backend/controllers/database')(server);
     await require('./backend/controllers/auth')(server);
     await require('./backend/routes/user_routes')(server);
+    await require('./backend/routes/channel_routes')(server);
 
 
 

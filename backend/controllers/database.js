@@ -155,8 +155,9 @@ module.exports = async function databaseController(server) {
             this.r_pkey = data.s_pkey || random.generate({ charset: 'hex' });
             this.r_skey = data.s_pkey || random.generate({ charset: 'hex' });
 
-            this.fullData = {
+            this.data = {
                 name: this.name,
+                icon: this.icon,
                 _id: this._id,
                 members: this.members,
                 s_pkey: this.s_pkey,
@@ -164,11 +165,20 @@ module.exports = async function databaseController(server) {
                 r_pkey: this.r_pkey,
                 r_skey: this.r_skey
             };
-            this.data = {
+            this.publicData = {
                 name: this.name,
                 _id: this._id,
+                icon: this.icon,
                 members: this.members
             }
+            this.memberData = {
+                name: this.name,
+                _id: this._id,
+                icon: this.icon,
+                members: this.members,
+                s_pkey: this.s_pkey,
+                r_pkey: this.r_pkey,
+            };
         }
 
         /**
@@ -181,7 +191,7 @@ module.exports = async function databaseController(server) {
         }
 
         create() {
-            return server.db.channels.create( this.fullData );
+            return server.db.channels.raw.insert( this.data );
         }
 
         edit(filter, data) {
@@ -216,6 +226,9 @@ module.exports = async function databaseController(server) {
             },
             searchById: function(uid) {
                 return server.db.users.collection.findOne({ _id: new server.mongo.ObjectId(uid) })
+            },
+            searchChannels: function(uid) {
+                return server.db.channels.raw.find({ 'members._id': new server.mongo.ObjectId(uid) })
             },
             delete: function(uid) {
                 return server.db.users.raw.delete({ _id: uid })
@@ -252,12 +265,15 @@ module.exports = async function databaseController(server) {
                 insert: function(data) {
                     return server.db.channels.collection.insertOne( data )
                 },
-                update: function(query) {
-                    return server.db.channels.collection.updateMany( query.filter, query.data, query.options || null )
+                update: function(query, data, options) {
+                    return server.db.channels.collection.updateMany( query, data, options )
                 },
                 delete: function(filter) {
                     return server.db.channels.collection.deleteMany( filter )
                 },
+            },
+            searchById: function(uid) {
+                return server.db.channels.collection.findOne({ _id: new server.mongo.ObjectId(uid) })
             },
             searchForUser: function(uid) {
                 return server.db.clannels.raw.find({ 'members._id': uid })
@@ -266,7 +282,7 @@ module.exports = async function databaseController(server) {
                 return server.db.messages.raw.find({ channel: cid }).sort({ created_at: -1 }).skip(20*page)
             },
             delete: function(cid) {
-                return server.db.channels.raw.delete({ _id: cid })
+                return server.db.channels.raw.delete({ _id: new server.mongo.ObjectId(cid) })
             }
         }
     });

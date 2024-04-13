@@ -13,7 +13,25 @@ module.exports = function APIController(server) {
             server.scope_0
         ]),
         async handler(req, rep) {
-            return (new server.db.users.schema(req.auth.user)).publicData;
+            return (new server.db.users.schema(req.auth.user)).publicData
+        }
+    });
+
+    server.get('/api/users/@me/channels', {
+        schema: {
+            title: 'Get User Self Data',
+            description: 'Get self user info.',
+            tags: [ 'users' ]
+        },
+        preHandler: server.auth([
+            server.verifyBearerAuth,
+            server.scope_0
+        ]),
+        async handler(req, rep) {
+            return (await server.db.users.searchChannels(req.auth.user._id).toArray()).map( a =>
+                a.members.find( b => b._id.toString() == req.auth.user._id.toString() ).permissions == -1 ?
+                    (new server.db.channels.schema(a)).publicData :
+                    (new server.db.channels.schema(a)).memberData );
         }
     });
 
@@ -188,14 +206,12 @@ module.exports = function APIController(server) {
             if ( (data.password || data.login) && (await server.db.users.collection.findOne({ password: req.body.password, login: req.body.login }))._id ) return server.httpErrors.badRequest('Change another password or login');
 
             if ( Object.keys(req.params).length == 0 ) return server.httpErrors.badRequest();
-            if ( data.icon && !data.icon in await readdir('../../frontend/build/icons') ) return server.httpErrors.badRequest('Incorrect icon');
+            if ( data.icon && !data.icon in await readdir('../../frontend/build/icons/user') ) return server.httpErrors.badRequest('Incorrect icon');
 
             if ( data.name ) data.name = screen(data.name, { allowedTags: [] });
             if ( data.bio ) data.bio = screen(data.bio, {
                 allowedTags: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'br', 'b']
             });
-
-            if( !(await server.db.users.searchById(req.params.id)) ) return server.httpErrors.notFound();
 
             try {
                 await server.db.users.raw.update({ _id: new server.mongo.ObjectId(req.params.id) }, { '$set': data });
