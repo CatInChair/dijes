@@ -1,12 +1,13 @@
-module.exports = function staticRoutes(server) {
+module.exports = async function staticRoutes(server) {
 
-    server.register(require('@fastify/static'), {
-        root: path.join(__dirname, '../../frontend/build')
+    await server.register(require('@fastify/static'), {
+        root: path.join(__dirname, '../../frontend/build'),
+        index: false
     });
 
-
-
-    server.get('/', function (request, reply) {
-        return 'Hello world!'
+    await server.get('/',  {
+        handler(req, rep) {
+            rep.sendFile('index.html', path.join(__dirname, '../../frontend/dev'));
+        }
     });
 };

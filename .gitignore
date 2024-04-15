@@ -1,2 +1,4 @@
 /node_modules/
 /.idea/
+/tls/localhost-cert.pem
+/tls/localhost-privkey.pem
