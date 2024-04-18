@@ -1,7 +1,7 @@
 # How to start this 'App'?
 
 - Replace with your MongoDB Server connect URL in /backend/controllers/database.js:6
-- Insert your TLS Certificate and Private key in dir /tls with names 'localhost-cert.pem' and 'localhost-privkey.pem'
+- Create dit /tls and insert there your TLS Certificate and Private key with names 'localhost-cert.pem' and 'localhost-privkey.pem' accordingly
 - Initialize app with 'npm init' and start with 'npm start' script on 'node start.js' in main directory
 
 > You can edit TLS Cert and Privkey pathes in start.js:16-17
