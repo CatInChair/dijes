@@ -86,7 +86,7 @@ module.exports = async function databaseController(server) {
                 name: this.name,
                 icon: this.icon,
                 bio: this.bio,
-                id: this._id
+                _id: this._id
             };
             this.data = {
                 name: this.name,

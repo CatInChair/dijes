@@ -26,7 +26,13 @@ global.path = require('node:path');
 /*  Plugins registration */
 
     await server.register(require('@fastify/cors'), {
-        origin: [ 'https://unpkg.com/vue@3/dist/vue.global.js', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.csshttps://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js', 'https://127.0.0.1:3000' ],
+        origin: [ 'https://unpkg.com/vue@3/dist/vue.global.prod.js',
+            'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.csshttps://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css',
+            'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js',
+            'https://127.0.0.1:3000', 'https://fonts.googleapis.com',
+            'https://fonts.gstatic.com', 'https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap',
+            'https://unpkg.com/axios/dist/axios.min.js'
+        ],
         methods: ['GET', 'POST', 'DELETE']
     });
 

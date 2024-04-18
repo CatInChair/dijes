@@ -126,9 +126,7 @@ module.exports = async function authController(server) {
             if( !user ) {
                 return server.httpErrors.forbidden();
             }
-
             let data = user.token.find( a => a.aud == req.body.aud );
-
             if ( !data ) {
                 data = { jti: new server.mongo.ObjectId(), scopes: req.body.scopes, aud: req.body.aud, type: 'access', exp: Date.now() + access_exp };
                 user.token.push( data );
@@ -147,7 +145,7 @@ module.exports = async function authController(server) {
             data.sub = user._id.toString();
             data.iss = hostname;
 
-            return await createSigner({ noTimestamp: true, key: user.secret, algorithm: 'HS256', expiresIn: data.exp*999, jti: data.jti.toString(), aud: data.aud, iss: data.iss, sub: data.sub, notBefore: 0 })({ type: 'access', scopes: req.body.scopes });
+            return { token: await createSigner({ noTimestamp: true, key: user.secret, algorithm: 'HS256', expiresIn: data.exp*999, jti: data.jti.toString(), aud: data.aud, iss: data.iss, sub: data.sub, notBefore: 0 })({ type: 'access', scopes: req.body.scopes }) };
         }
     });
 };

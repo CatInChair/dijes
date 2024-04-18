@@ -4,7 +4,6 @@
   "description": "Simple web-chat app",
   "main": "start.js",
   "scripts": {
-    "test": "echo \"All ok!\"",
     "start": "node start.js"
   },
   "repository": {

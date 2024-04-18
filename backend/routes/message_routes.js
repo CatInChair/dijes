@@ -16,7 +16,7 @@ module.exports = function APIController(server) {
                 type: 'object',
                 required: [ 'page' ],
                 properties: {
-                    page: { type: 'number' }
+                    page: { type: 'number', minimum: 1 }
                 }
             },
             tags: [ 'channels', 'messages' ]
@@ -61,6 +61,7 @@ module.exports = function APIController(server) {
         ]),
         async handler(req, rep) {
             let data = { content: screen(req.body.content, { allowedTags: [] }), created_by: req.auth.user._id }
+            console.log(data)
 
             let channel = await server.db.channels.searchById(req.params.id);
 
