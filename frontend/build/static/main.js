@@ -182,7 +182,6 @@ var app = createApp({
                 window.location.reload()
             },
 
-
             send: async function() {
                 if(localStorage.getItem('token')) {
                     let content = document.getElementById('send').elements['message'].value;
